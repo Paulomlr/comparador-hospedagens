@@ -1,0 +1,45 @@
+@startuml
+actor "Usuário" as U
+participant "Cliente" as C
+participant "Agregador" as AG
+participant "Fornecedor A" as FA
+participant "Fornecedor B" as FB
+participant "Fornecedor C" as FC
+participant "Fornecedor D" as FD
+
+U -> C : informa destino, datas,\nhóspedes e modo
+C -> AG : pesquisar (JSON via TCP)
+activate AG
+AG -> AG : valida o pedido
+
+alt modo concorrente
+  par uma thread para cada fornecedor
+    AG -> FA : consultar
+    FA --> AG : hospedagens
+  else
+    AG -> FB : consultar
+    FB --> AG : hospedagens
+  else
+    AG -> FC : consultar
+    FC --> AG : hospedagens
+  else
+    AG -> FD : consultar
+    FD --> AG : hospedagens
+  end
+else modo sequencial
+  AG -> FA : consultar
+  FA --> AG : hospedagens
+  AG -> FB : consultar
+  FB --> AG : hospedagens
+  AG -> FC : consultar
+  FC --> AG : hospedagens
+  AG -> FD : consultar
+  FD --> AG : hospedagens
+end
+
+AG -> AG : junta as hospedagens, ordena pelo\npreço total e identifica a mais econômica
+AG -> AG : registra os tempos no arquivo
+AG --> C : resultados, mais_economica,\ntempo_total_ms e fornecedores
+deactivate AG
+C --> U : exibe resultados e tempo total
+@enduml

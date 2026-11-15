@@ -1,0 +1,9 @@
+# arquivos gerados pelo Python
+__pycache__/
+*.pyc
+
+# registro de tempos gerado ao usar o sistema (os dados dos experimentos ficam em experimentos/resultados/)
+agregador/registro_tempos.csv
+
+# configuração local do editor
+.vscode/

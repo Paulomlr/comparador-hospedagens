@@ -1,0 +1,19 @@
+@startuml
+left to right direction
+
+actor "Usuário" as U
+actor "Fornecedor de hospedagem" as F
+
+rectangle "Comparador de Hospedagens" {
+  usecase "UC01\nPesquisar hospedagens" as UC01
+  usecase "UC02\nConsultar fornecedores" as UC02
+  usecase "UC03\nVisualizar resultados" as UC03
+}
+
+U -- UC01
+U -- UC03
+F -- UC02
+
+UC01 .> UC02 : <<include>>
+UC01 .> UC03 : <<include>>
+@enduml

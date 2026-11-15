@@ -1,0 +1,31 @@
+﻿cenario;modo;repeticao;tempo_total_ms;ida_e_volta_ms;status_C;tempo_C_ms;hospedagens_encontradas;mais_economica;status_pesquisa
+todos ativos;sequencial;1;5061;5074;sucesso;1503;8;Hostel Lapa (Fornecedor C) R$ 600,00;sucesso
+todos ativos;sequencial;2;5064;5082;sucesso;1521;8;Hostel Lapa (Fornecedor C) R$ 600,00;sucesso
+todos ativos;sequencial;3;5056;5076;sucesso;1502;8;Hostel Lapa (Fornecedor C) R$ 600,00;sucesso
+todos ativos;sequencial;4;5068;5090;sucesso;1520;8;Hostel Lapa (Fornecedor C) R$ 600,00;sucesso
+todos ativos;sequencial;5;5071;5087;sucesso;1516;8;Hostel Lapa (Fornecedor C) R$ 600,00;sucesso
+todos ativos;concorrente;1;2017;2035;sucesso;1516;8;Hostel Lapa (Fornecedor C) R$ 600,00;sucesso
+todos ativos;concorrente;2;2005;2008;sucesso;1503;8;Hostel Lapa (Fornecedor C) R$ 600,00;sucesso
+todos ativos;concorrente;3;2017;2041;sucesso;1516;8;Hostel Lapa (Fornecedor C) R$ 600,00;sucesso
+todos ativos;concorrente;4;2019;2022;sucesso;1502;8;Hostel Lapa (Fornecedor C) R$ 600,00;sucesso
+todos ativos;concorrente;5;2005;2025;sucesso;1504;8;Hostel Lapa (Fornecedor C) R$ 600,00;sucesso
+C desativado antes da pesquisa;sequencial;1;5625;5651;indisponivel;2067;6;Hotel Sol (Fornecedor B) R$ 1.100,00;sucesso
+C desativado antes da pesquisa;sequencial;2;5600;5621;indisponivel;2048;6;Hotel Sol (Fornecedor B) R$ 1.100,00;sucesso
+C desativado antes da pesquisa;sequencial;3;5580;5599;indisponivel;2029;6;Hotel Sol (Fornecedor B) R$ 1.100,00;sucesso
+C desativado antes da pesquisa;sequencial;4;5560;5582;indisponivel;2023;6;Hotel Sol (Fornecedor B) R$ 1.100,00;sucesso
+C desativado antes da pesquisa;sequencial;5;5584;5603;indisponivel;2047;6;Hotel Sol (Fornecedor B) R$ 1.100,00;sucesso
+C desativado antes da pesquisa;concorrente;1;2036;2059;indisponivel;2035;6;Hotel Sol (Fornecedor B) R$ 1.100,00;sucesso
+C desativado antes da pesquisa;concorrente;2;2035;2050;indisponivel;2033;6;Hotel Sol (Fornecedor B) R$ 1.100,00;sucesso
+C desativado antes da pesquisa;concorrente;3;2061;2076;indisponivel;2059;6;Hotel Sol (Fornecedor B) R$ 1.100,00;sucesso
+C desativado antes da pesquisa;concorrente;4;2024;2039;indisponivel;2022;6;Hotel Sol (Fornecedor B) R$ 1.100,00;sucesso
+C desativado antes da pesquisa;concorrente;5;2032;2047;indisponivel;2030;6;Hotel Sol (Fornecedor B) R$ 1.100,00;sucesso
+C desativado 1 s depois do início;sequencial;1;5601;5604;indisponivel;2060;6;Hotel Sol (Fornecedor B) R$ 1.100,00;sucesso
+C desativado 1 s depois do início;sequencial;2;5579;5595;indisponivel;2024;6;Hotel Sol (Fornecedor B) R$ 1.100,00;sucesso
+C desativado 1 s depois do início;sequencial;3;5587;5603;indisponivel;2037;6;Hotel Sol (Fornecedor B) R$ 1.100,00;sucesso
+C desativado 1 s depois do início;sequencial;4;5581;5598;indisponivel;2032;6;Hotel Sol (Fornecedor B) R$ 1.100,00;sucesso
+C desativado 1 s depois do início;sequencial;5;5580;5597;indisponivel;2032;6;Hotel Sol (Fornecedor B) R$ 1.100,00;sucesso
+C desativado 1 s depois do início;concorrente;1;2016;2034;indisponivel;986;6;Hotel Sol (Fornecedor B) R$ 1.100,00;sucesso
+C desativado 1 s depois do início;concorrente;2;2005;2022;indisponivel;986;6;Hotel Sol (Fornecedor B) R$ 1.100,00;sucesso
+C desativado 1 s depois do início;concorrente;3;2005;2022;indisponivel;986;6;Hotel Sol (Fornecedor B) R$ 1.100,00;sucesso
+C desativado 1 s depois do início;concorrente;4;2017;2034;indisponivel;986;6;Hotel Sol (Fornecedor B) R$ 1.100,00;sucesso
+C desativado 1 s depois do início;concorrente;5;2005;2021;indisponivel;987;6;Hotel Sol (Fornecedor B) R$ 1.100,00;sucesso

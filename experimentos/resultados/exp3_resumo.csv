@@ -1,0 +1,11 @@
+﻿atraso_por_fornecedor_s;modo;repeticoes;media_ms;desvio_ms;min_ms;max_ms;teorico_ms
+0,50;sequencial;5;2065,4;8,3;2056;2074;2000
+0,50;concorrente;5;516,6;1,5;514;518;500
+1,00;sequencial;5;4062,4;6,5;4056;4072;4000
+1,00;concorrente;5;1017,2;0,4;1017;1018;1000
+1,50;sequencial;5;6074,6;9,4;6059;6084;6000
+1,50;concorrente;5;1514,8;5,5;1505;1518;1500
+2,00;sequencial;5;8068,0;13,7;8048;8084;8000
+2,00;concorrente;5;2018,2;1,1;2017;2020;2000
+2,50;sequencial;5;10067,4;17,9;10046;10087;10000
+2,50;concorrente;5;2512,2;7,0;2504;2518;2500

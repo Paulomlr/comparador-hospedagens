@@ -1,0 +1,7 @@
+﻿cenario;modo;repeticoes;media_ms;desvio_ms;min_ms;max_ms;status_do_C;tempo_do_C_ms;hospedagens_encontradas;mais_economica
+todos ativos;sequencial;5;5064,0;5,9;5056;5071;sucesso;1512,4;8;Hostel Lapa (Fornecedor C) R$ 600,00
+todos ativos;concorrente;5;2012,6;7,0;2005;2019;sucesso;1508,2;8;Hostel Lapa (Fornecedor C) R$ 600,00
+C desativado antes da pesquisa;sequencial;5;5589,8;24,3;5560;5625;indisponivel;2042,8;6;Hotel Sol (Fornecedor B) R$ 1.100,00
+C desativado antes da pesquisa;concorrente;5;2037,6;13,9;2024;2061;indisponivel;2035,8;6;Hotel Sol (Fornecedor B) R$ 1.100,00
+C desativado 1 s depois do início;sequencial;5;5585,6;9,2;5579;5601;indisponivel;2037,0;6;Hotel Sol (Fornecedor B) R$ 1.100,00
+C desativado 1 s depois do início;concorrente;5;2009,6;6,3;2005;2017;indisponivel;986,2;6;Hotel Sol (Fornecedor B) R$ 1.100,00

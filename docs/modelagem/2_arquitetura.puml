@@ -1,0 +1,35 @@
+@startuml
+skinparam componentStyle rectangle
+left to right direction
+
+actor "Usuário" as U
+
+node "Computador local (127.0.0.1)" {
+  component "Cliente\n(terminal)" as C
+  component "Agregador\nporta 5000" as AG
+  component "Fornecedor A\nporta 5001" as FA
+  component "Fornecedor B\nporta 5002" as FB
+  component "Fornecedor C\nporta 5003" as FC
+  component "Fornecedor D\nporta 5004" as FD
+  file "Arquivo de registro\nde tempos" as LOG
+}
+
+U <--> C : terminal
+C <--> AG : pesquisar / resultados\n(JSON via TCP)
+AG --> LOG : grava os tempos
+AG <--> FD : consultar / hospedagens\n(JSON via TCP)
+AG <--> FC : consultar / hospedagens\n(JSON via TCP)
+AG <--> FB : consultar / hospedagens\n(JSON via TCP)
+AG <--> FA : consultar / hospedagens\n(JSON via TCP)
+
+note bottom of AG
+  Uma thread para cada cliente.
+  No modo concorrente, uma thread
+  para cada fornecedor.
+end note
+
+note top of C
+  Podem existir vários clientes
+  ao mesmo tempo.
+end note
+@enduml
