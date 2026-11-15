@@ -134,13 +134,13 @@ python experimentos\experimentos.py
 python experimentos\graficos.py
 ```
 
-O primeiro leva cerca de 10 minutos. Ele abre os fornecedores e o agregador sozinho, executa os experimentos 1 a 5 do enunciado com várias repetições e grava as tabelas em `experimentos/resultados/` (`resultados.md` reúne todas). O segundo gera os três gráficos (PNG) na mesma pasta e precisa do matplotlib. Durante a execução, evite usar o computador para outras tarefas pesadas, para não alterar os tempos medidos.
+O primeiro leva cerca de 10 minutos. Ele abre os fornecedores e o agregador sozinho, executa os experimentos 1 a 5 do enunciado com várias repetições e grava as tabelas em `experimentos/resultados/` (`resultados.md` reúne todas). O segundo gera os quatro gráficos (PNG) na mesma pasta e precisa do matplotlib. Durante a execução, evite usar o computador para outras tarefas pesadas, para não alterar os tempos medidos.
 
 **O que cada experimento faz.** Em todos, a pesquisa é Rio de Janeiro, de 10/12/2026 a 15/12/2026, com 2 hóspedes, e antes de cada série há uma pesquisa de aquecimento, descartada. Os fornecedores A, B, C e D têm atrasos de 0,5, 1, 1,5 e 2 s, exceto quando o experimento diz outra coisa.
 
 | Experimento | O que o script faz | Repetições | Arquivos | Gráfico |
 |---|---|---|---|---|
-| 1 e 2: consulta sequencial e concorrente | Pesquisa nos dois modos e compara os tempos totais | 10 por modo | `exp1_2_*.csv` | |
+| 1 e 2: consulta sequencial e concorrente | Pesquisa nos dois modos e compara os tempos totais. O gráfico mostra, em linha do tempo, quando cada fornecedor foi consultado em cada modo | 10 por modo | `exp1_2_*.csv` | `grafico_4_comparacao.png` |
 | 3: simulação de latência | Põe o mesmo atraso nos quatro fornecedores (0,5, 1, 1,5, 2 e 2,5 s) e mede os dois modos. Compara com o valor teórico (4 x atraso no sequencial, 1 x no concorrente) | 5 por atraso e modo | `exp3_*.csv` | `grafico_1_latencia.png` |
 | 4: vários clientes | Dispara 1, 5, 10 e 20 clientes ao mesmo tempo, nos dois modos, e mede o tempo de cada cliente | 3 por quantidade e modo | `exp4_*.csv` | `grafico_2_clientes.png` |
 | 5: indisponibilidade | Pesquisa com todos ativos, com o fornecedor C desligado antes da pesquisa e com o C desligado 1 s depois do início dela. Registra o estado do C, quantas hospedagens vieram e qual foi a mais econômica | 5 por cenário e modo | `exp5_*.csv` | `grafico_3_falhas.png` |

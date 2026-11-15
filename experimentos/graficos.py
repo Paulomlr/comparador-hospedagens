@@ -4,6 +4,7 @@
 
 import csv
 import os
+import statistics
 import textwrap
 
 import matplotlib
@@ -28,6 +29,54 @@ def salvar(figura, nome):
     figura.savefig(os.path.join(RESULTADOS, nome), dpi=150)
     plt.close(figura)
     print("gravado:", nome)
+
+
+def grafico_comparacao():
+    linhas = ler("exp1_2_repeticoes.csv")
+    letras = ["A", "B", "C", "D"]
+    cores = {"A": "#1f77b4", "B": "#2ca02c", "C": "#d62728", "D": "#9467bd"}
+
+    linhas_do_grafico = []  # (modo, letra, inicio, duracao), de cima para baixo
+    totais = {}
+    for modo in ("sequencial", "concorrente"):
+        dados = [l for l in linhas if l["modo"] == modo]
+        tempos = {x: statistics.mean(float(d[f"tempo_{x}_ms"]) for d in dados) / 1000 for x in letras}
+        totais[modo] = statistics.mean(float(d["tempo_total_ms"]) for d in dados) / 1000
+        inicio = 0.0
+        for x in letras:
+            linhas_do_grafico.append((modo, x, inicio, tempos[x]))
+            if modo == "sequencial":
+                inicio += tempos[x]  # cada consulta só começa quando a anterior termina
+
+    figura, eixo = plt.subplots(figsize=(9, 5))
+    posicao = {}
+    y = len(linhas_do_grafico) + 1
+    for i, (modo, x, inicio, duracao) in enumerate(linhas_do_grafico):
+        if i == len(letras):
+            y -= 1  # espaço entre os dois modos
+        y -= 1
+        posicao[(modo, x)] = y
+        eixo.barh(y, duracao, left=inicio, color=cores[x], height=0.7,
+                  label=f"Fornecedor {x}" if modo == "sequencial" else None)
+        eixo.text(inicio + duracao / 2, y, f"{duracao:.2f}".replace(".", ","), ha="center",
+                  va="center", color="white", fontsize=9)
+
+    eixo.set_yticks(list(posicao.values()))
+    eixo.set_yticklabels([f"{modo}  {x}" for (modo, x) in posicao])
+    for modo in ("sequencial", "concorrente"):
+        meio = statistics.mean(posicao[(modo, x)] for x in letras)
+        eixo.axhline(meio, alpha=0)  # só para fixar o limite vertical
+        eixo.text(totais[modo] + 0.08, meio, f"Total: {totais[modo]:.2f} s".replace(".", ","),
+                  va="center", fontweight="bold")
+        eixo.plot([totais[modo]] * 2, [min(posicao[(modo, x)] for x in letras) - 0.5,
+                                       max(posicao[(modo, x)] for x in letras) + 0.5],
+                  color="black", linestyle="--", linewidth=1)
+    eixo.set_xlim(0, max(totais.values()) * 1.2)
+    eixo.set_xlabel("Tempo desde o início da pesquisa (s)")
+    eixo.set_title("Experimentos 1 e 2: sequencial × concorrente (média de 10 pesquisas)")
+    eixo.grid(axis="x", alpha=0.3)
+    eixo.legend(loc="lower right")
+    salvar(figura, "grafico_4_comparacao.png")
 
 
 def grafico_latencia():
@@ -98,6 +147,7 @@ def grafico_falhas():
 
 
 if __name__ == "__main__":
+    grafico_comparacao()
     grafico_latencia()
     grafico_clientes()
     grafico_falhas()
