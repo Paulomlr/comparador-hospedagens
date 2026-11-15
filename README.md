@@ -48,6 +48,13 @@ iniciar_fornecedores.bat    abre os 4 fornecedores (Windows)
 - O sistema usa apenas a biblioteca padrão do Python.
 - Só os gráficos precisam do matplotlib: `python -m pip install matplotlib`.
 
+## Obter o código
+
+```
+git clone https://github.com/Paulomlr/comparador-hospedagens.git
+cd comparador-hospedagens
+```
+
 ## Como executar
 
 Rode cada programa em um terminal diferente, sempre na pasta do projeto. Digite os comandos no terminal; não use o botão de executar do VS Code para o segundo programa em diante, porque ele interrompe o programa que já estava rodando no mesmo terminal.
@@ -136,6 +143,29 @@ O primeiro leva cerca de 10 minutos. Ele abre os fornecedores e o agregador sozi
 - **Endereços dos fornecedores:** lista `FORNECEDORES` em `agregador/agregador.py`.
 - **Hospedagens simuladas:** `fornecedores/dados_fornecedores.py`.
 - **Registro de tempos:** `agregador/registro_tempos.csv`, separado por `;`, com as colunas `data_hora`, `modo`, `destino`, `tempo_total_ms`, `tempo_A_ms` a `tempo_D_ms` e `fornecedores_ok`.
+
+## Onde alterar
+
+| Para mudar | Onde |
+|---|---|
+| Hotéis e preços | `fornecedores/dados_fornecedores.py` |
+| Porta ou atraso de um fornecedor | argumentos do `fornecedor.py` (e linhas do `iniciar_fornecedores.bat`) |
+| Tempo limite por fornecedor | `TIMEOUT` em `agregador/agregador.py` |
+| Regra de ordenação ou da opção mais econômica | função `consolidar` em `agregador/agregador.py` |
+| Validação do pedido | `validar_pesquisa` em `agregador/agregador.py` e `montar_resposta` em `fornecedores/fornecedor.py` |
+| Nova forma de consultar os fornecedores | nova função `consultar_...` registrada em `ESTRATEGIAS` no agregador (e o modo aceito em `validar_pesquisa` e no menu do cliente) |
+| O que aparece na tela do cliente | `mostrar_resultado` e `mostrar_detalhes` em `cliente/cliente.py` |
+| Formato das mensagens | `docs/protocolo/protocolo.md` e os três programas |
+
+Para acrescentar um quinto fornecedor, são necessários: seus dados em `dados_fornecedores.py`, uma linha na lista `FORNECEDORES` do agregador e a mensagem de letra válida do `fornecedor.py` (hoje cita A a D). O teste automático e os experimentos assumem exatamente quatro fornecedores (A a D) e também precisam de ajuste.
+
+## Como contribuir
+
+1. Crie uma branch para a alteração.
+2. Rode `python testes\teste_sistema.py` antes de enviar. Se mexer no agregador ou no fornecedor, rode também os experimentos de novo, porque as tabelas e os gráficos dependem do código.
+3. Se a alteração mudar o comportamento, atualize o README e, quando for o caso, o protocolo (`docs/protocolo/`) e os requisitos (`docs/requisitos/`).
+4. Não envie o arquivo `agregador/registro_tempos.csv` (ele é gerado ao usar o sistema e já está no `.gitignore`).
+5. Abra um pull request ou avise o grupo.
 
 ## Observações
 
