@@ -1,8 +1,36 @@
 # Comparador de Hospedagens
 
-Trabalho 1 de Sistemas Distribuídos (UNIFESSPA, FACSI), Tema 4.
+Trabalho 1 de Sistemas Distribuídos (UNIFESSPA, FACSI), Tema 4: Comparador de Hospedagens.
 
-Aplicação cliente-servidor em Python que consulta fornecedores de hospedagem independentes por sockets TCP, de forma sequencial e de forma concorrente (com threads), e compara os tempos das duas estratégias. Os dados de hospedagem são simulados.
+Aplicação cliente-servidor em Python que pesquisa hospedagens em quatro fornecedores independentes, usando sockets TCP. O agregador consulta os fornecedores de duas formas: um de cada vez (sequencial) e todos ao mesmo tempo, com threads (concorrente). O projeto compara o tempo das duas formas. Os dados de hospedagem são simulados.
+
+## O que o trabalho pede e onde está cada parte
+
+Entregáveis do enunciado:
+
+| Entregável | Onde está |
+|---|---|
+| Documento de requisitos | `docs/requisitos/` |
+| Modelagem (casos de uso, arquitetura e sequência) | `docs/modelagem/` |
+| Código-fonte e instruções de execução | este repositório e este README |
+| Experimentos e resultados | `experimentos/` (tabelas e gráficos em `experimentos/resultados/`) |
+| Relatório técnico e apresentação | não fazem parte do repositório |
+
+Requisitos técnicos do enunciado:
+
+| Requisito | Onde está |
+|---|---|
+| Sockets TCP entre os componentes | os três programas usam o módulo `socket` |
+| Pelo menos quatro serviços independentes | fornecedores A, B, C e D, cada um em um processo com porta própria (`fornecedores/fornecedor.py`) |
+| Consultas sequenciais | `consultar_sequencial` em `agregador/agregador.py` |
+| Consultas concorrentes com threads | `consultar_concorrente` em `agregador/agregador.py` |
+| Atendimento de vários clientes | uma thread por conexão no agregador (`main` e `atender`) |
+| Protocolo de aplicação documentado | `docs/protocolo/protocolo.md` |
+| Tratamento de erros e desconexões | validação, tempo limite e isolamento de fornecedores com falha no agregador; conferido por `testes/teste_sistema.py` |
+| Registro do tempo de execução | `registrar_tempos` em `agregador/agregador.py`, que grava `agregador/registro_tempos.csv` |
+| Consolidar e apresentar os resultados | `consolidar` (agregador) e `mostrar_resultado` (cliente) |
+| Demonstração | roteiro manual, mais abaixo |
+| Cinco experimentos obrigatórios | `experimentos/` |
 
 ## Como funciona
 
@@ -13,11 +41,55 @@ Cliente(s) --TCP/JSON--> Agregador --TCP/JSON--> Fornecedor A (porta 5001)
                                              --> Fornecedor D (porta 5004)
 ```
 
-- O **cliente** (terminal) pede destino, datas, número de hóspedes e o modo da consulta (sequencial ou concorrente).
-- O **agregador** (porta 5000) valida o pedido, consulta os quatro fornecedores, junta as hospedagens, ordena pelo preço total (desempate por estrelas), aponta a mais econômica, mede os tempos e grava um registro.
-- Cada **fornecedor** é um processo independente, com sua porta, sua base de hospedagens e um atraso configurável.
+- O **cliente** (terminal) pede destino, datas, número de hóspedes e o modo da consulta.
+- O **agregador** (porta 5000) recebe a pesquisa, consulta os fornecedores, junta os resultados e responde ao cliente.
+- Cada **fornecedor** é um processo independente, com sua porta, sua base de hospedagens e um atraso configurável que simula a demora de uma consulta real.
 
-Cada pedido usa uma conexão nova. As mensagens são JSON em uma linha terminada por `\n`. O protocolo completo está em `docs/protocolo/protocolo.md`.
+### Uma pesquisa, passo a passo
+
+1. O usuário informa destino, check-in, check-out, número de hóspedes e o modo (sequencial ou concorrente) no cliente.
+2. O cliente envia ao agregador a mensagem `pesquisar`.
+3. O agregador valida o pedido. Se algo estiver errado, responde com um erro.
+4. O agregador consulta os quatro fornecedores. No modo sequencial, um depois do outro. No modo concorrente, uma thread por fornecedor, todos ao mesmo tempo.
+5. Cada fornecedor valida o pedido, espera o seu atraso, procura as hospedagens do destino, calcula o preço total (diária vezes o número de noites) e responde.
+6. O agregador junta as hospedagens, ordena pelo preço total (em empate, mais estrelas primeiro), aponta a mais econômica, mede o tempo, grava uma linha no registro de tempos e responde ao cliente.
+7. O cliente mostra a tabela de hospedagens, avisa quais fornecedores ficaram indisponíveis e mostra os tempos.
+
+### Sequencial e concorrente
+
+Com os fornecedores respondendo em 0,5, 1, 1,5 e 2 segundos:
+
+- **Sequencial:** o agregador pergunta ao A, espera, pergunta ao B, espera, e assim por diante. O tempo total é a **soma**: cerca de 5 segundos.
+- **Concorrente:** o agregador cria uma thread para cada fornecedor e pergunta a todos ao mesmo tempo. O tempo total é o do **mais lento**: cerca de 2 segundos.
+
+Isso funciona porque o agregador passa quase todo o tempo esperando a resposta da rede, e as esperas acontecem em paralelo.
+
+### Quando um fornecedor falha
+
+A pesquisa continua com os outros. O fornecedor com problema aparece como `indisponível` (não respondeu ou recusou a conexão, com tempo limite de 3 segundos) ou como `erro` (respondeu fora do formato do protocolo). Só se **todos** falharem o agregador devolve um erro.
+
+## O protocolo em resumo
+
+As mensagens são JSON em uma única linha terminada por `\n`. Cada pedido usa uma conexão nova: quem pede conecta, envia uma mensagem, recebe uma resposta e fecha. Datas no formato `DD/MM/AAAA`; valores com ponto decimal dentro das mensagens (o cliente mostra com vírgula).
+
+Pedido do cliente ao agregador:
+
+```json
+{"operacao": "pesquisar", "destino": "Rio de Janeiro", "checkin": "10/12/2026",
+ "checkout": "15/12/2026", "hospedes": 2, "modo": "concorrente"}
+```
+
+Resposta (resumida):
+
+```json
+{"status": "sucesso", "modo": "concorrente", "tempo_total_ms": 2004,
+ "resultados": [{"fonte": "Fornecedor C", "nome": "Hostel Lapa", "tipo": "hostel", "estrelas": 2,
+                 "preco_diaria": 120.0, "preco_total": 600.0}, "..."],
+ "mais_economica": {"fonte": "Fornecedor C", "nome": "Hostel Lapa", "preco_total": 600.0},
+ "fornecedores": [{"fonte": "Fornecedor A", "status": "sucesso", "quantidade": 2, "tempo_ms": 502}, "..."]}
+```
+
+O agregador pergunta aos fornecedores com a operação `consultar`. Os formatos completos, os erros e o encerramento das conexões estão em `docs/protocolo/protocolo.md`.
 
 ## Estrutura do projeto
 
@@ -42,11 +114,46 @@ docs/
 iniciar_fornecedores.bat    abre os 4 fornecedores (Windows)
 ```
 
-## Requisitos
+### O que cada programa faz por dentro
 
-- Python 3 (testado com Python 3.15.2 no Windows 11; não foi testado em outras versões).
-- O sistema usa apenas a biblioteca padrão do Python.
-- Só os gráficos precisam do matplotlib: `python -m pip install matplotlib`.
+| Arquivo | Responsabilidade | Funções principais |
+|---|---|---|
+| `fornecedores/fornecedor.py` | Servidor que atende uma consulta por conexão | `montar_resposta` (valida, espera o atraso, busca e calcula), `normalizar` (ignora acentos e maiúsculas no destino), `ler_linha`, `atender`, `main` |
+| `agregador/agregador.py` | Recebe a pesquisa, consulta os fornecedores e consolida | `validar_pesquisa`, `consultar_fornecedor`, `consultar_sequencial`, `consultar_concorrente`, `hospedagens_validas`, `consolidar`, `registrar_tempos`, `processar`, `atender`, `main` |
+| `cliente/cliente.py` | Interface de terminal | `montar_pedido` e as funções `perguntar_...`, `enviar_pesquisa`, `mostrar_resultado`, `mostrar_detalhes`, `menu_final` |
+| `experimentos/experimentos.py` | Abre os programas, mede e grava as tabelas | `configurar`, `pesquisar`, `experimento_1_2`, `experimento_3`, `experimento_4`, `experimento_5` |
+| `experimentos/graficos.py` | Desenha os gráficos a partir das tabelas | `grafico_comparacao`, `grafico_latencia`, `grafico_clientes`, `grafico_falhas` |
+| `testes/teste_sistema.py` | Teste automático de integração | `testar_fornecedor`, `testar_agregador`, `testar_falhas` |
+
+## Decisões de projeto
+
+- **Fornecedores como processos independentes, na mesma máquina, cada um em uma porta.** O enunciado pede serviços independentes e permite portas distintas na mesma máquina. A comunicação é por sockets TCP reais, mesmo em `127.0.0.1`. Os endereços ficam numa lista no agregador, e para usar outras máquinas bastaria trocá-los.
+- **Uma conexão por pedido.** É mais simples, e cada pesquisa é independente das outras.
+- **Uma thread por conexão, no agregador e nos fornecedores.** Assim vários clientes são atendidos ao mesmo tempo. Sem isso, os atrasos de pedidos simultâneos se somariam.
+- **Falha isolada.** Um fornecedor fora do ar, lento ou com resposta quebrada não derruba a pesquisa: só ele é marcado como indisponível ou com erro.
+- **Tempo limite de 3 segundos por fornecedor.** Evita que um fornecedor lento trave a pesquisa.
+- **Ordem estável dos resultados.** No modo concorrente, cada resposta é guardada na posição do seu fornecedor, então o resultado não depende de quem respondeu primeiro. O desempate por estrelas existe pelo mesmo motivo.
+- **Validação nas duas pontas.** O agregador valida o pedido do cliente e confere o formato da resposta dos fornecedores. Cada fornecedor valida o pedido do agregador.
+- **Registro em CSV com `;`**, para abrir direto no Excel em português.
+
+## Resultados dos experimentos
+
+Resumo da execução completa que está em `experimentos/resultados/` (detalhes em `resultados.md`):
+
+| Experimento | O que os números mostram |
+|---|---|
+| 1 e 2 | Sequencial: 5,06 s. Concorrente: 2,02 s. O concorrente foi 2,51 vezes mais rápido |
+| 3 | O sequencial cresce em 4 vezes o atraso dos fornecedores, e o concorrente em 1 vez, sempre próximo do valor teórico (com 2 s de atraso: 8,07 s e 2,02 s) |
+| 4 | De 1 a 20 clientes ao mesmo tempo, o tempo por cliente não piorou em nenhum dos modos, e não houve falhas |
+| 5 | Com o fornecedor C desligado, a pesquisa continua, e a mais econômica deixa de ser o Hostel Lapa (R$ 600,00) e passa a ser o Hotel Sol (R$ 1.100,00). Uma falha muda o resultado, e não só o tempo |
+
+![Experimentos 1 e 2](experimentos/resultados/grafico_4_comparacao.png)
+
+![Experimento 3](experimentos/resultados/grafico_1_latencia.png)
+
+![Experimento 4](experimentos/resultados/grafico_2_clientes.png)
+
+![Experimento 5](experimentos/resultados/grafico_3_falhas.png)
 
 ## Obter o código
 
@@ -54,6 +161,12 @@ iniciar_fornecedores.bat    abre os 4 fornecedores (Windows)
 git clone https://github.com/Paulomlr/comparador-hospedagens.git
 cd comparador-hospedagens
 ```
+
+## Requisitos para executar
+
+- Python 3 (testado com Python 3.15.2 no Windows 11; não foi testado em outras versões).
+- O sistema usa apenas a biblioteca padrão do Python.
+- Só os gráficos precisam do matplotlib: `python -m pip install matplotlib`.
 
 ## Como executar
 
@@ -182,11 +295,28 @@ Para acrescentar um quinto fornecedor, são necessários: seus dados em `dados_f
 4. Não envie o arquivo `agregador/registro_tempos.csv` (ele é gerado ao usar o sistema e já está no `.gitignore`).
 5. Abra um pull request ou avise o grupo.
 
-## Observações
+## Limitações e observações
 
 - Um fornecedor com atraso de 3 s ou mais é considerado indisponível pelo agregador (tempo limite). Nos experimentos, os atrasos ficam abaixo disso.
+- O tempo limite de 3 s vale para cada operação de rede (conectar, ler a resposta) e não para o total da consulta a um fornecedor.
 - No Windows, tentar conectar a um fornecedor desligado leva cerca de 2 s para falhar. Esse tempo aparece nas medições.
+- O número de hóspedes é validado e enviado aos fornecedores, mas na simulação não altera o preço.
 - Os destinos disponíveis na base simulada são Rio de Janeiro, São Paulo, Belém e Marabá. Outro destino devolve uma lista vazia.
+- Não há limite para o tamanho de uma mensagem recebida.
+- Se um cliente desconectar durante a pesquisa, o agregador termina a pesquisa, registra os tempos e descarta a resposta.
+- Tudo foi testado em uma única máquina (Windows 11, Python 3.15.2), com os componentes em `127.0.0.1`.
+
+## Glossário
+
+- **Socket:** ponta de uma comunicação entre dois programas pela rede.
+- **TCP:** protocolo que entrega as mensagens inteiras e na ordem, como uma ligação telefônica.
+- **Porta:** número que identifica qual programa recebe a comunicação em uma máquina.
+- **Processo:** programa em execução, com sua própria memória. Os fornecedores, o agregador e o cliente são processos separados.
+- **Thread:** linha de execução dentro de um processo. Com threads, várias esperas acontecem ao mesmo tempo.
+- **Sequencial:** consultar um fornecedor depois do outro.
+- **Concorrente:** consultar todos os fornecedores ao mesmo tempo, com uma thread para cada um.
+- **Tempo limite (timeout):** tempo máximo de espera por uma resposta antes de desistir.
+- **Protocolo de aplicação:** combinação do formato e da ordem das mensagens entre os programas.
 
 ## Documentos
 
