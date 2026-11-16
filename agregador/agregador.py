@@ -15,7 +15,7 @@ HOST = "127.0.0.1"
 PORTA = 5000
 TIMEOUT = 3  # segundos de espera por cada fornecedor
 
-# Endereços dos fornecedores (para usar outras máquinas, basta trocar aqui)
+# Endereços dos fornecedores (para outras máquinas, troque aqui e ajuste o HOST do fornecedor.py)
 FORNECEDORES = [
     ("Fornecedor A", "127.0.0.1", 5001),
     ("Fornecedor B", "127.0.0.1", 5002),

@@ -127,7 +127,7 @@ iniciar_fornecedores.bat    abre os 4 fornecedores (Windows)
 
 ## Decisões de projeto
 
-- **Fornecedores como processos independentes, na mesma máquina, cada um em uma porta.** O enunciado pede serviços independentes e permite portas distintas na mesma máquina. A comunicação é por sockets TCP reais, mesmo em `127.0.0.1`. Os endereços ficam numa lista no agregador, e para usar outras máquinas bastaria trocá-los.
+- **Fornecedores como processos independentes, na mesma máquina, cada um em uma porta.** O enunciado pede serviços independentes e permite portas distintas na mesma máquina. A comunicação é por sockets TCP reais, mesmo em `127.0.0.1`. Os endereços dos fornecedores ficam numa lista no agregador. Para usar outras máquinas seria preciso trocar esses endereços, fazer os fornecedores escutarem em um endereço acessível pela rede (`HOST` em `fornecedor.py`, hoje `127.0.0.1`) e liberar as portas no firewall. Isso não foi testado.
 - **Uma conexão por pedido.** É mais simples, e cada pesquisa é independente das outras.
 - **Uma thread por conexão, no agregador e nos fornecedores.** Assim vários clientes são atendidos ao mesmo tempo. Sem isso, os atrasos de pedidos simultâneos se somariam.
 - **Falha isolada.** Um fornecedor fora do ar, lento ou com resposta quebrada não derruba a pesquisa: só ele é marcado como indisponível ou com erro.
