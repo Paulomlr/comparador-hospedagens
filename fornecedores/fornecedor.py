@@ -16,7 +16,6 @@ HOST = "127.0.0.1"
 
 
 def normalizar(texto):
-    # tira acentos e maiúsculas para comparar o destino com a base
     decomposto = unicodedata.normalize("NFD", texto)
     sem_acento = "".join(c for c in decomposto if unicodedata.category(c) != "Mn")
     return sem_acento.strip().lower()

@@ -1,9 +1,3 @@
-# Experimentos 1 a 5: sobe os fornecedores e o agregador, faz as medições e grava
-# as tabelas em experimentos/resultados/. Os gráficos são feitos por graficos.py.
-# Uso: python experimentos.py            (execução completa, cerca de 10 minutos)
-#      python experimentos.py --rapido   (poucas repetições, só para testar)
-# Feche os fornecedores e o agregador antes: o script abre os seus próprios.
-
 import csv
 import json
 import os
